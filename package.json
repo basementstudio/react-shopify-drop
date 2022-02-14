@@ -1,0 +1,74 @@
+{
+  "version": "0.1.1",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "react-shopify-drop",
+  "author": "Moran Santiago <santiago@basement.studio>",
+  "module": "dist/react-shopify-drop.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/react-shopify-drop.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/react-shopify-drop.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.3.0",
+    "@graphql-codegen/introspection": "^2.1.0",
+    "@graphql-codegen/typescript": "^2.4.1",
+    "@graphql-codegen/typescript-graphql-request": "^4.3.2",
+    "@graphql-codegen/typescript-operations": "^2.2.1",
+    "@size-limit/preset-small-lib": "^7.0.4",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
+    "husky": "^7.0.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "size-limit": "^7.0.4",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@sentry/browser": "^6.16.1",
+    "gql-codegen": "^0.1.1",
+    "graphql-request": "^3.7.0",
+    "react-countdown": "^2.3.2",
+    "react-hook-form": "^7.22.4",
+    "react-merge-refs": "^1.1.0",
+    "swr": "^1.1.1",
+    "tsdx": "^0.14.1"
+  }
+}
