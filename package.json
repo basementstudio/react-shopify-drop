@@ -62,12 +62,8 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "@sentry/browser": "^6.16.1",
-    "gql-codegen": "^0.1.1",
     "graphql-request": "^3.7.0",
-    "react-countdown": "^2.3.2",
     "react-hook-form": "^7.22.4",
-    "react-merge-refs": "^1.1.0",
     "swr": "^1.1.1",
     "tsdx": "^0.14.1"
   }
