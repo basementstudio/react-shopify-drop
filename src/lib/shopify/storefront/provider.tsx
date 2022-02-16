@@ -1,6 +1,4 @@
-import React from 'react'
-import { ToggleState, useToggleState } from '../../../hooks/use-toggle-state'
-import {
+import React, {
   createContext,
   useCallback,
   useContext,
@@ -8,6 +6,8 @@ import {
   useState
 } from 'react'
 import useSWR from 'swr'
+
+import { ToggleState, useToggleState } from '../../../hooks/use-toggle-state'
 import { CartFragment, Sdk } from './generated'
 
 type TErrors = {
@@ -42,7 +42,11 @@ type InternalContextProviderProps = {
   appCartId: string
 }
 
-const InternalContextProvider: React.FC<InternalContextProviderProps> = ({ children, client, appCartId }) => {
+const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
+  children,
+  client,
+  appCartId
+}) => {
   const cartToggleState = useToggleState()
   const { data: cart, mutate } = useSWR('cart', cartFetcher, {
     revalidateIfStale: false,
@@ -223,8 +227,16 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({ child
   )
 }
 
-export const StorefrontProvider: React.FC<InternalContextProviderProps> = ({ children, client, appCartId }) => {
-  return <InternalContextProvider client={client} appCartId={appCartId}>{children}</InternalContextProvider>
+export const StorefrontProvider: React.FC<InternalContextProviderProps> = ({
+  children,
+  client,
+  appCartId
+}) => {
+  return (
+    <InternalContextProvider client={client} appCartId={appCartId}>
+      {children}
+    </InternalContextProvider>
+  )
 }
 
 export const useStorefront = () => {

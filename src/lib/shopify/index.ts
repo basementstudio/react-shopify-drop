@@ -1,4 +1,5 @@
 import * as React from 'react'
+
 import { formatError } from '../utils'
 
 export const getAdminEndpoint = (endpoint: string) =>
@@ -35,11 +36,11 @@ const useEmailSubscriptionForm = () => {
     required: true
   }
 
-  const handleSubmit = (cb: (email: string) => Promise<void>) => {
-    if (email && typeof email === 'string') cb(email)
-  }
-
   const onSubmit = React.useMemo(() => {
+    const handleSubmit = (cb: (email: string) => Promise<void>) => {
+      if (email && typeof email === 'string') cb(email)
+    }
+
     return handleSubmit(async (data) => {
       setStatus('submitting')
       setMessage(undefined)
@@ -53,7 +54,7 @@ const useEmailSubscriptionForm = () => {
         setMessage(formatError(error).message)
       }
     })
-  }, [handleSubmit, setEmail])
+  }, [email, setEmail])
 
   return { emailInputProps, onSubmit, status, message }
 }

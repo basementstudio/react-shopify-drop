@@ -142,7 +142,7 @@ Fetches all collection products on a shop.
 ##### `GetCollections`: _function_ ``(variables?: GetCollectionsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]) => Promise<GetCollectionsQuery>``
 Fetches all collections.
 
-##### `Request`: _function_ ``(query: RequestDocument, variables?: { [k: string]: string }, requestHeaders?: Dom.RequestInit["headers"]) => Promise<any>``
+##### `Request`: _function_ ``(query: RequestDocument, variables?: Record<string, string>, requestHeaders?: Dom.RequestInit["headers"]) => Promise<any>``
 Executes a custom request.
 
 ## Contributing
