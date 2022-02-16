@@ -1,4 +1,4 @@
-import { GraphQLClient, RequestDocument } from 'graphql-request';
+import { GraphQLClient } from 'graphql-request';
 import * as Dom from 'graphql-request/dist/types.dom';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
