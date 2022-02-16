@@ -1,6 +1,4 @@
 import * as React from 'react'
-import { useForm } from 'react-hook-form'
-
 import { formatError } from '../utils'
 
 export const getAdminEndpoint = (endpoint: string) =>
@@ -24,37 +22,38 @@ const createCustomerWithEmail = async (email: string) => {
 }
 
 const useEmailSubscriptionForm = () => {
-  const { register, handleSubmit, setValue } = useForm<{ email: string }>()
+  const [email, setEmail] = React.useState('')
   const [status, setStatus] = React.useState<
     'submitting' | 'error' | 'success'
   >()
   const [message, setMessage] = React.useState<React.ReactNode | undefined>()
 
-  const emailInputProps = React.useMemo(() => {
-    return {
-      placeholder: 'Enter your email to stay updated',
-      autoComplete: 'email',
-      ...register('email'),
-      type: 'email',
-      required: true
-    }
-  }, [register])
+  const emailInputProps = {
+    placeholder: 'Enter your email to stay updated',
+    autoComplete: 'email',
+    type: 'email',
+    required: true
+  }
+
+  const handleSubmit = (cb: (email: string) => Promise<void>) => {
+    if (email && typeof email === 'string') cb(email)
+  }
 
   const onSubmit = React.useMemo(() => {
     return handleSubmit(async (data) => {
       setStatus('submitting')
       setMessage(undefined)
       try {
-        const _message = await createCustomerWithEmail(data.email)
+        const _message = await createCustomerWithEmail(data)
         setStatus('success')
         setMessage(_message)
-        setValue('email', '')
+        setEmail('')
       } catch (error) {
         setStatus('error')
         setMessage(formatError(error).message)
       }
     })
-  }, [handleSubmit, setValue])
+  }, [handleSubmit, setEmail])
 
   return { emailInputProps, onSubmit, status, message }
 }

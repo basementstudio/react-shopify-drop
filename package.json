@@ -64,7 +64,6 @@
   },
   "dependencies": {
     "graphql-request": "^3.7.0",
-    "react-hook-form": "^7.22.4",
     "swr": "^1.1.1"
   }
 }
