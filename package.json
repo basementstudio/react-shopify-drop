@@ -1,13 +1,13 @@
 {
   "version": "0.1.5",
   "main": "dist/index.js",
+  "repository": "git://github.com/basementstudio/next-real-viewport.git",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "scripts": {
     "start": "tsdx watch",
