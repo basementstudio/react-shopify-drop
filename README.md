@@ -18,9 +18,8 @@ react-shopify-drop is a react library for interacting with [shopify's storefront
 <a aria-label="Vercel logo" href="https://basement.studio">
   <img src="https://basement.studio/gh-badge.svg">
 </a>
+
 This is a private package from [basement.studio](https://basement.studio).
-
-
 
 ## Installation
 
