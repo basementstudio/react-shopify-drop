@@ -1,7 +1,26 @@
-# react-shopify-drop
-[![npm version](https://badge.fury.io/js/react-shopify-drop.svg)](https://badge.fury.io/js/react-shopify-drop)
-
+# react-shopify-drop (not production ready)
 react-shopify-drop is a react library for interacting with [shopify's storefront api](https://shopify.dev/api/storefront#top).
+
+
+<p>
+  <a aria-label="NPM version" href="https://www.npmjs.com/package/react-shopify-drop">
+    <img alt="" src="https://badge.fury.io/js/react-shopify-drop.svg">
+  </a>
+  <a aria-label="License" href="https://github.com/basementstudio/react-shopify-drop/blob/master/LICENSE">
+    <img alt="" src="https://badgen.net/github/license/basementstudio/react-shopify-drop">
+  </a>
+</p>
+
+---
+
+⚠️ Status: Alpha — please don't use this in production unless willing to contribute to the library.
+
+<a aria-label="Vercel logo" href="https://basement.studio">
+  <img src="https://basement.studio/gh-badge.svg">
+</a>
+This is a private package from [basement.studio](https://basement.studio).
+
+
 
 ## Installation
 
