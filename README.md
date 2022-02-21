@@ -105,12 +105,6 @@ Updates an item inside the shopify cart.
 ##### `onRemoveLineItem`: _function_ ``({ merchandiseId: string }) => Promise<void>``
 Removes an item from the shopify cart.
 
-##### `query`: _function_ ``(query: string) => Promise<any>``
-Executes a custom query.
-
-##### `mutation`: _function_ ``(mutation: string, variables?: { [k: string]: string }) => Promise<any>``
-Executes a custom mutation.
-
 ## Using the full Storefront client
 In the other hand, you can also export the created client and import it outside your application frontend (f.e: next.js page getStaticProps function)
 
@@ -160,8 +154,8 @@ Fetches all collection products on a shop.
 ##### `GetCollections`: _function_ ``(variables?: GetCollectionsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]) => Promise<GetCollectionsQuery>``
 Fetches all collections.
 
-##### `Request`: _function_ ``(query: RequestDocument, variables?: Record<string, string>, requestHeaders?: Dom.RequestInit["headers"]) => Promise<any>``
-Executes a custom request.
+##### `Request`: _function_ ``(query: string, variables?: Record<string, any>) => Promise<any>``
+Executes a custom query.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

@@ -19,12 +19,10 @@ export const createStorefrontClient = ({
 
   return {
     ...generatedSdk,
-    query: async (query: string, requestHeaders?: Dom.RequestInit['headers']) =>
-      graphqlClient.request(query, requestHeaders),
-    mutation: async (
-      mutation: string,
-      variables?: { [k: string]: string },
+    Request: async (
+      query: string,
+      variables?: Record<string, any>,
       requestHeaders?: Dom.RequestInit['headers']
-    ) => graphqlClient.request(mutation, variables, requestHeaders)
+    ) => graphqlClient.request(query, variables, requestHeaders)
   }
 }
