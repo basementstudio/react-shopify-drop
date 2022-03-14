@@ -1,5 +1,5 @@
 {
-  "version": "0.1.12",
+  "version": "0.1.13",
   "main": "dist/index.js",
   "repository": "git://github.com/basementstudio/react-shopify-drop.git",
   "typings": "dist/index.d.ts",
@@ -61,7 +61,6 @@
     "eslint-plugin-react": "^7.26.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "graphql-tag": "^2.12.6",
     "husky": "^7.0.4",
     "prettier": "^2.4.1",
     "react": "^17.0.2",
@@ -74,6 +73,7 @@
   "dependencies": {
     "graphql": "^16.3.0",
     "graphql-request": "^3.7.0",
+    "graphql-tag": "^2.12.6",
     "swr": "^1.1.1"
   },
   "prettier": {
