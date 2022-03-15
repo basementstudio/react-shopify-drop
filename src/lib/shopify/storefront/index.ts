@@ -13,7 +13,7 @@ export const createStorefrontClient = ({
     headers: {
       'x-shopify-storefront-access-token': accessToken,
       accept: 'application/json',
-      'Content-Type': 'application/graphql'
+      'Content-Type': 'application/json'
     }
   })
   const generatedSdk = getSdk(graphqlClient)
