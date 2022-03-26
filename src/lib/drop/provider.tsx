@@ -1,4 +1,6 @@
+import { classNames } from 'lib/utils'
 import * as React from 'react'
+import useDelayedRender from 'use-delayed-render'
 import create from 'zustand'
 import createContext from 'zustand/context'
 
@@ -18,21 +20,25 @@ const { Provider, useStore: useDrop } = createContext<DropContext>()
 
 type DropProviderProps = {
   children?: React.ReactNode
-  countdownChildren?: React.ReactNode
-  endDate: Date
-  startDate?: Date
+  countdownProps?: CountdownProps
+  endDate: Date | number
+  startDate?: Date | number
 }
 
 const DropProvider = ({
   children,
-  countdownChildren,
   endDate,
-  startDate
+  startDate,
+  countdownProps
 }: DropProviderProps) => {
   const { endTimestamp, startTimestamp } = React.useMemo(() => {
     return {
-      endTimestamp: endDate.getTime(),
-      startTimestamp: startDate ? startDate.getTime() : null
+      endTimestamp: typeof endDate === 'number' ? endDate : endDate.getTime(),
+      startTimestamp: startDate
+        ? typeof startDate === 'number'
+          ? startDate
+          : startDate.getTime()
+        : null
     }
   }, [endDate, startDate])
 
@@ -55,39 +61,51 @@ const DropProvider = ({
         })
       }
     >
-      <Renderer countdownChildren={countdownChildren}>{children}</Renderer>
+      <Renderer countdownProps={countdownProps}>{children}</Renderer>
     </Provider>
   )
 }
 
 function Renderer({
-  children,
-  countdownChildren
+  countdownProps,
+  children
 }: {
   children?: React.ReactNode
-  countdownChildren?: React.ReactNode
+  countdownProps?: CountdownProps
 }) {
   const isCompleted = useDrop(
     React.useCallback((state) => state.isCompleted, [])
   )
 
-  //   const { mounted } = useDelayedRender(isCompleted, {
-  //     exitDelay: 2000,
-  //     enterDelay: 2000
-  //   })
+  const { mounted, rendered } = useDelayedRender(!isCompleted, {
+    exitDelay: countdownProps?.exitDelay ?? 0
+  })
 
   return (
     <>
-      {isCompleted ? (
-        children
-      ) : (
-        <CountdownRenderer>{countdownChildren}</CountdownRenderer>
+      {isCompleted && children}
+      {mounted && (
+        <CountdownRenderer rendered={rendered} {...countdownProps}>
+          {countdownProps?.children}
+        </CountdownRenderer>
       )}
     </>
   )
 }
 
-function CountdownRenderer({ children }: { children?: React.ReactNode }) {
+interface CountdownProps {
+  children?: React.ReactNode
+  className?: string
+  exitDelay?: number
+  exitClassName?: string
+}
+
+function CountdownRenderer({
+  children,
+  className,
+  exitClassName,
+  rendered
+}: CountdownProps & { rendered: boolean }) {
   const { endTimestamp, startTimestamp, update, isCompleted } = useDrop(
     React.useCallback(
       (state) => ({
@@ -109,7 +127,11 @@ function CountdownRenderer({ children }: { children?: React.ReactNode }) {
     }
   }, [endTimestamp, startTimestamp, isCompleted, update])
 
-  return <>{children}</>
+  return (
+    <div className={classNames(className, !rendered && exitClassName)}>
+      {children}
+    </div>
+  )
 }
 
 function calculateState(endTimestamp: number, startTimestamp: number | null) {

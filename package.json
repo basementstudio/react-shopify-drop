@@ -75,6 +75,7 @@
     "graphql-request": "^3.7.0",
     "graphql-tag": "^2.12.6",
     "swr": "^1.1.1",
+    "use-delayed-render": "^0.0.7",
     "zustand": "^3.7.1"
   },
   "prettier": {
