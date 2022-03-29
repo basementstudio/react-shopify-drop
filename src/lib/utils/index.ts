@@ -14,9 +14,3 @@ export const formatError = (
 }
 
 export const isApiSupported = (api: string) => isClient && api in window
-
-export function classNames(
-  ...classes: (false | null | undefined | string)[]
-): string {
-  return classes.filter(Boolean).join(' ')
-}
