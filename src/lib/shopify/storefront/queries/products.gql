@@ -15,6 +15,10 @@ fragment Product on Product {
         title
         availableForSale
         quantityAvailable
+        compareAtPriceV2 {
+          amount
+          currencyCode
+        }
         priceV2 {
           amount
           currencyCode
