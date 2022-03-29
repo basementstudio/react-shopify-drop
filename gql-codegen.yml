@@ -1,8 +1,8 @@
 overwrite: true
 schema:
-  - ${NEXT_PUBLIC_SHOPIFY_STOREFRONT_GRAPHQL_ENDPOINT}:
+  - ${SHOPIFY_STOREFRONT_GRAPHQL_ENDPOINT}:
       headers:
-        x-shopify-storefront-access-token: ${NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN}
+        x-shopify-storefront-access-token: ${SHOPIFY_STOREFRONT_ACCESS_TOKEN}
 generates:
   ./src/lib/shopify/storefront/generated.ts:
     documents: './src/lib/shopify/storefront/**/*.{gql,graphql}'
