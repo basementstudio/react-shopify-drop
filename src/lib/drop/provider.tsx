@@ -1,0 +1,173 @@
+import * as React from 'react'
+import create from 'zustand'
+import createContext from 'zustand/context'
+import shallow from 'zustand/shallow'
+
+import { getFormattedTimeDelta } from './utils'
+
+interface DropContext {
+  progress: number | null
+  timeRemaining: number
+  isCompleted: boolean
+  endTimestamp: number
+  startTimestamp: number | null
+  update: () => void
+  humanTimeRemaining: ReturnType<typeof getFormattedTimeDelta>
+  countdownState: 'running' | 'completed' | 'exiting'
+  setCountdownState: (state: 'running' | 'completed' | 'exiting') => void
+}
+
+const { Provider, useStore: useDrop } = createContext<DropContext>()
+
+type DropProviderProps = {
+  children?: React.ReactNode
+  countdownChildren?: React.ReactNode
+  endDate: Date | number
+  startDate?: Date | number
+  exitDelay?: number
+}
+
+const DropProvider = ({
+  children,
+  endDate,
+  startDate,
+  exitDelay,
+  countdownChildren
+}: DropProviderProps) => {
+  const { endTimestamp, startTimestamp } = React.useMemo(() => {
+    const endTimestamp =
+      typeof endDate === 'number' ? endDate : endDate.getTime()
+    const startTimestamp = startDate
+      ? typeof startDate === 'number'
+        ? startDate
+        : startDate.getTime()
+      : null
+
+    if (startTimestamp && startTimestamp >= endTimestamp) {
+      throw new Error(
+        'startDate must be before endDate. Please check your start and end dates.'
+      )
+    }
+
+    return { endTimestamp, startTimestamp }
+  }, [endDate, startDate])
+
+  return (
+    <Provider
+      createStore={() =>
+        create<DropContext>((set) => {
+          const state = calculateState(endTimestamp, startTimestamp)
+          return {
+            ...state,
+            endTimestamp,
+            startTimestamp,
+            countdownState: state.isCompleted ? 'completed' : 'running',
+            update() {
+              set(calculateState(endTimestamp, startTimestamp))
+            },
+            setCountdownState(countdownState: DropContext['countdownState']) {
+              set({ countdownState })
+            }
+          }
+        })
+      }
+    >
+      <Renderer exitDelay={exitDelay} countdownChildren={countdownChildren}>
+        {children}
+      </Renderer>
+    </Provider>
+  )
+}
+
+function Renderer({
+  countdownChildren,
+  exitDelay = 0,
+  children
+}: {
+  children?: React.ReactNode
+} & Pick<DropProviderProps, 'countdownChildren' | 'exitDelay'>) {
+  const {
+    isCompleted,
+    countdownState,
+    endTimestamp,
+    startTimestamp,
+    update,
+    setCountdownState
+  } = useDrop(
+    React.useCallback(
+      (state) => ({
+        isCompleted: state.isCompleted,
+        countdownState: state.countdownState,
+        endTimestamp: state.endTimestamp,
+        startTimestamp: state.startTimestamp,
+        setCountdownState: state.setCountdownState,
+        update: state.update
+      }),
+      []
+    ),
+    shallow
+  )
+
+  React.useEffect(() => {
+    if (isCompleted) return
+    const interval = window.setInterval(update, 1000)
+
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [endTimestamp, startTimestamp, isCompleted, update])
+
+  React.useEffect(() => {
+    switch (countdownState) {
+      case 'running':
+        if (isCompleted) {
+          setCountdownState(exitDelay > 0 ? 'exiting' : 'completed')
+        }
+        break
+      case 'exiting': {
+        const timeout = window.setTimeout(() => {
+          setCountdownState('completed')
+        }, exitDelay ?? 0)
+        return () => {
+          window.clearTimeout(timeout)
+        }
+      }
+      default:
+        break
+    }
+
+    return
+  }, [countdownState, exitDelay, isCompleted, setCountdownState])
+
+  return (
+    <>
+      {isCompleted && <Memo>{children}</Memo>}
+      {countdownState !== 'completed' && <Memo>{countdownChildren}</Memo>}
+    </>
+  )
+}
+
+const Memo = React.memo(({ children }: { children?: React.ReactNode }) => {
+  return <>{children}</>
+})
+
+function calculateState(endTimestamp: number, startTimestamp: number | null) {
+  const now = Date.now()
+
+  const timeRemaining = Math.max(0, endTimestamp - now)
+  const progress = startTimestamp
+    ? parseFloat(
+        Math.max(
+          0,
+          Math.min((now - startTimestamp) / (endTimestamp - startTimestamp), 1)
+        ).toFixed(2)
+      )
+    : null
+  const isCompleted = timeRemaining <= 0
+
+  const humanTimeRemaining = getFormattedTimeDelta(timeRemaining)
+
+  return { timeRemaining, isCompleted, progress, humanTimeRemaining }
+}
+
+export { DropContext, DropProvider, useDrop }

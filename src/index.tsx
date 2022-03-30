@@ -1,3 +1,4 @@
+export * from './lib/drop'
 export { createStorefrontClient } from './lib/shopify/storefront'
 export {
   StorefrontProvider,

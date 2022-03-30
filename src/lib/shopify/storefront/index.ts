@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-import * as Dom from 'graphql-request/dist/types.dom'
+import type * as Dom from 'graphql-request/dist/types.dom'
 
 import { getSdk } from './generated'
 
