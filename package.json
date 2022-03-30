@@ -17,7 +17,8 @@
     "lint:fix": "yarn lint --fix",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "gql-codegen": "graphql-codegen --config gql-codegen.yml -r dotenv/config"
   },
   "peerDependencies": {
     "react": ">=16"
