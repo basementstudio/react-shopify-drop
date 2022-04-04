@@ -8,6 +8,8 @@ import React, {
 import useSWR from 'swr'
 
 import { ToggleState, useToggleState } from '../../../hooks/use-toggle-state'
+import type { EventManager } from '../../utils/events'
+import { createEventManager } from '../../utils/events'
 import { CartFragment, Sdk } from './generated'
 
 type TErrors = {
@@ -33,6 +35,11 @@ type Context = {
   cartItemsCount: number | undefined
   cartToggleState: ToggleState
   errors: TErrors
+  event: {
+    subscribe: EventManager['on']
+    unsubscribe: EventManager['removeListener']
+    only: EventManager['only']
+  }
 }
 
 const Context = createContext<Context | undefined>(undefined)
@@ -59,6 +66,7 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
     updateLineItemError: null,
     removeLineItemError: null
   })
+  const event = createEventManager()
 
   const cartLocalStorage = {
     set: (id: string) => {
@@ -103,9 +111,11 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
 
         setError('createCartError', null)
 
+        event.emit('createCartSuccess', cart)
         return cart
       } catch (error) {
         setError('createCartError', error as Error)
+        event.emit('createCartError', error)
         return null
       }
     },
@@ -138,9 +148,11 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
           mutate(cart, false)
         }
 
+        event.emit('addLineItemSuccess', cart)
         setError('addLineItemError', null)
       } catch (error) {
         setError('addLineItemError', error as Error)
+        event.emit('addLineItemError', error)
       }
     },
     [createCart, mutate]
@@ -168,9 +180,11 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
           mutate(cart, false)
         }
 
+        event.emit('updateLineItemSuccess', cart)
         setError('updateLineItemError', null)
       } catch (error) {
         setError('updateLineItemError', error as Error)
+        event.emit('updateLineItemError', error)
       }
     },
     [mutate]
@@ -192,9 +206,11 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
           mutate(cart, false)
         }
 
+        event.emit('removeLineItemSuccess', cart)
         setError('removeLineItemError', null)
       } catch (error) {
         setError('removeLineItemError', error as Error)
+        event.emit('removeLineItemError', error)
       }
     },
     [mutate]
@@ -219,6 +235,11 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
         onAddLineItem,
         onUpdateLineItem,
         onRemoveLineItem,
+        event: {
+          subscribe: event.on,
+          unsubscribe: event.removeListener,
+          only: event.only
+        },
         errors
       }}
     >
