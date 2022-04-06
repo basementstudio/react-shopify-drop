@@ -33,6 +33,7 @@ export function getFormattedTimeDelta(
     days: options?.daysInHours ? '' : zeroPad(days, zeroPadLength),
     hours: formattedHours,
     minutes: zeroPad(minutes, zeroPadLength),
-    seconds: zeroPad(seconds, zeroPadLength)
+    seconds: zeroPad(seconds, zeroPadLength),
+    isComplete: timeRemaining < 1000 // this is the "human" isComplete. At this point we might have some milliseconds left, but the countdown will say "0".
   }
 }
