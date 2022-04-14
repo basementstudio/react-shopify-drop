@@ -40,13 +40,14 @@ const Context = createContext<Context | undefined>(undefined)
 type InternalContextProviderProps = {
   client: Sdk
   appCartId: string
+  children?: React.ReactNode
 }
 
-const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
+const InternalContextProvider = ({
   children,
   client,
   appCartId
-}) => {
+}: InternalContextProviderProps) => {
   const cartToggleState = useToggleState()
   const { data: cart, mutate } = useSWR('cart', cartFetcher, {
     revalidateIfStale: false,
@@ -60,13 +61,16 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
     removeLineItemError: null
   })
 
-  const cartLocalStorage = {
-    set: (id: string) => {
-      localStorage.setItem(`${appCartId}-cart-id`, id)
-    },
-    get: () => localStorage.getItem(`${appCartId}-cart-id`),
-    clear: () => localStorage.removeItem(`${appCartId}-cart-id`)
-  }
+  const cartLocalStorage = useMemo(
+    () => ({
+      set: (id: string) => {
+        localStorage.setItem(`${appCartId}-cart-id`, id)
+      },
+      get: () => localStorage.getItem(`${appCartId}-cart-id`),
+      clear: () => localStorage.removeItem(`${appCartId}-cart-id`)
+    }),
+    [appCartId]
+  )
 
   const setError = (key: keyof TErrors, value: Error | null) =>
     setErrors((prevErrors) => ({
@@ -109,7 +113,7 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
         return null
       }
     },
-    [mutate]
+    [cartLocalStorage, client, mutate]
   )
 
   const onAddLineItem = useCallback(
@@ -143,7 +147,7 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
         setError('addLineItemError', error as Error)
       }
     },
-    [createCart, mutate]
+    [cartLocalStorage, client, createCart, mutate]
   )
 
   const onUpdateLineItem = useCallback(
@@ -173,7 +177,7 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
         setError('updateLineItemError', error as Error)
       }
     },
-    [mutate]
+    [cartLocalStorage, client, mutate]
   )
 
   const onRemoveLineItem = useCallback(
@@ -197,7 +201,7 @@ const InternalContextProvider: React.FC<InternalContextProviderProps> = ({
         setError('removeLineItemError', error as Error)
       }
     },
-    [mutate]
+    [cartLocalStorage, client, mutate]
   )
 
   const cartItemsCount = useMemo(() => {
