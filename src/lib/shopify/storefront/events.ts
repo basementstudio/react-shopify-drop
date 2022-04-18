@@ -16,10 +16,7 @@ interface Emitter<T extends EventMap> {
   listenerCount<K extends EventKey<T>>(eventName: K): number
 }
 
-export const storefrontEvents =
-  new EventEmitter() as Emitter<STOREFRONT_EVENT_MAP>
-
-export type STOREFRONT_EVENT_MAP = {
+type STOREFRONT_EVENT_MAP = {
   createCartError: Error
   createCartSuccess: CartFragment | null | undefined
   addLineItemError: Error
@@ -29,3 +26,6 @@ export type STOREFRONT_EVENT_MAP = {
   removeLineItemError: Error
   removeLineItemSuccess: CartFragment | null | undefined
 }
+
+export const storefrontEvents =
+  new EventEmitter() as Emitter<STOREFRONT_EVENT_MAP>
