@@ -8,13 +8,13 @@ import { getFormattedTimeDelta } from './utils'
 interface DropContext {
   progress: number | null
   timeRemaining: number
-  isCompleted: boolean
+  isComplete: boolean
   endTimestamp: number
   startTimestamp: number | null
   update: () => void
   humanTimeRemaining: ReturnType<typeof getFormattedTimeDelta>
-  countdownState: 'running' | 'completed' | 'exiting'
-  setCountdownState: (state: 'running' | 'completed' | 'exiting') => void
+  countdownState: 'running' | 'complete' | 'exiting'
+  setCountdownState: (state: 'running' | 'complete' | 'exiting') => void
 }
 
 const { Provider, useStore: useDrop } = createContext<DropContext>()
@@ -61,7 +61,9 @@ const DropProvider = ({
             ...state,
             endTimestamp,
             startTimestamp,
-            countdownState: state.isCompleted ? 'completed' : 'running',
+            countdownState: state.humanTimeRemaining.isComplete
+              ? 'complete'
+              : 'running',
             update() {
               set(calculateState(endTimestamp, startTimestamp))
             },
@@ -87,7 +89,8 @@ function Renderer({
   children?: React.ReactNode
 } & Pick<DropProviderProps, 'countdownChildren' | 'exitDelay'>) {
   const {
-    isCompleted,
+    isComplete,
+    humanIsComplete,
     countdownState,
     endTimestamp,
     startTimestamp,
@@ -96,7 +99,8 @@ function Renderer({
   } = useDrop(
     React.useCallback(
       (state) => ({
-        isCompleted: state.isCompleted,
+        isComplete: state.isComplete,
+        humanIsComplete: state.humanTimeRemaining.isComplete,
         countdownState: state.countdownState,
         endTimestamp: state.endTimestamp,
         startTimestamp: state.startTimestamp,
@@ -109,24 +113,24 @@ function Renderer({
   )
 
   React.useEffect(() => {
-    if (isCompleted) return
+    if (isComplete) return
     const interval = window.setInterval(update, 1000)
 
     return () => {
       window.clearInterval(interval)
     }
-  }, [endTimestamp, startTimestamp, isCompleted, update])
+  }, [endTimestamp, startTimestamp, isComplete, update])
 
   React.useEffect(() => {
     switch (countdownState) {
       case 'running':
-        if (isCompleted) {
-          setCountdownState(exitDelay > 0 ? 'exiting' : 'completed')
+        if (humanIsComplete) {
+          setCountdownState(exitDelay > 0 ? 'exiting' : 'complete')
         }
         break
       case 'exiting': {
         const timeout = window.setTimeout(() => {
-          setCountdownState('completed')
+          setCountdownState('complete')
         }, exitDelay ?? 0)
         return () => {
           window.clearTimeout(timeout)
@@ -137,12 +141,12 @@ function Renderer({
     }
 
     return
-  }, [countdownState, exitDelay, isCompleted, setCountdownState])
+  }, [countdownState, exitDelay, humanIsComplete, setCountdownState])
 
   return (
     <>
-      {isCompleted && <Memo>{children}</Memo>}
-      {countdownState !== 'completed' && <Memo>{countdownChildren}</Memo>}
+      {isComplete && <Memo>{children}</Memo>}
+      {countdownState !== 'complete' && <Memo>{countdownChildren}</Memo>}
     </>
   )
 }
@@ -163,11 +167,11 @@ function calculateState(endTimestamp: number, startTimestamp: number | null) {
         ).toFixed(2)
       )
     : null
-  const isCompleted = timeRemaining <= 0
+  const isComplete = timeRemaining <= 0
 
   const humanTimeRemaining = getFormattedTimeDelta(timeRemaining)
 
-  return { timeRemaining, isCompleted, progress, humanTimeRemaining }
+  return { timeRemaining, isComplete, progress, humanTimeRemaining }
 }
 
 export { DropContext, DropProvider, useDrop }
