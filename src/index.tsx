@@ -1,3 +1,4 @@
+export * from './hooks/use-product-helper'
 export * from './lib/drop'
 export { createStorefrontClient } from './lib/shopify/storefront'
 export {
