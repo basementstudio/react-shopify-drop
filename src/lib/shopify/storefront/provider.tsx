@@ -1,24 +1,10 @@
-import EventEmitter from 'events'
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState
-} from 'react'
+import React, { createContext, useCallback, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { ToggleState, useToggleState } from '../../../hooks/use-toggle-state'
+import { formatError } from '../../utils'
+import { storefrontEvents } from './events'
 import { CartFragment, Sdk } from './generated'
-
-const events = new EventEmitter()
-
-type TErrors = {
-  createCartError: Error | null
-  addLineItemError: Error | null
-  updateLineItemError: Error | null
-  removeLineItemError: Error | null
-}
 
 type LineItem = { merchandiseId: string; quantity: number }
 
@@ -35,8 +21,6 @@ type Context = {
   cart: CartFragment | undefined | null
   cartItemsCount: number | undefined
   cartToggleState: ToggleState
-  errors: TErrors
-  events: EventEmitter
 }
 
 const Context = createContext<Context | undefined>(undefined)
@@ -58,12 +42,6 @@ const InternalContextProvider = ({
     revalidateOnFocus: false,
     revalidateOnReconnect: false
   })
-  const [errors, setErrors] = useState<TErrors>({
-    createCartError: null,
-    addLineItemError: null,
-    updateLineItemError: null,
-    removeLineItemError: null
-  })
 
   const cartLocalStorage = useMemo(
     () => ({
@@ -75,12 +53,6 @@ const InternalContextProvider = ({
     }),
     [appCartId]
   )
-
-  const setError = (key: keyof TErrors, value: Error | null) =>
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [key]: value
-    }))
 
   async function cartFetcher() {
     try {
@@ -109,13 +81,10 @@ const InternalContextProvider = ({
         mutate(cart, false)
         cartLocalStorage.set(cartId ?? '')
 
-        setError('createCartError', null)
-
-        events.emit('createCartSuccess', cart)
+        storefrontEvents.emit('createCartSuccess', cart)
         return cart
       } catch (error) {
-        setError('createCartError', error as Error)
-        events.emit('createCartError', error)
+        storefrontEvents.emit('createCartError', formatError(error))
         return null
       }
     },
@@ -148,11 +117,9 @@ const InternalContextProvider = ({
           mutate(cart, false)
         }
 
-        events.emit('addLineItemSuccess', cart)
-        setError('addLineItemError', null)
+        storefrontEvents.emit('addLineItemSuccess', cart)
       } catch (error) {
-        setError('addLineItemError', error as Error)
-        events.emit('addLineItemError', error)
+        storefrontEvents.emit('addLineItemError', formatError(error))
       }
     },
     [cartLocalStorage, client, createCart, mutate]
@@ -180,11 +147,9 @@ const InternalContextProvider = ({
           mutate(cart, false)
         }
 
-        events.emit('updateLineItemSuccess', cart)
-        setError('updateLineItemError', null)
+        storefrontEvents.emit('updateLineItemSuccess', cart)
       } catch (error) {
-        setError('updateLineItemError', error as Error)
-        events.emit('updateLineItemError', error)
+        storefrontEvents.emit('updateLineItemError', formatError(error))
       }
     },
     [cartLocalStorage, client, mutate]
@@ -206,11 +171,9 @@ const InternalContextProvider = ({
           mutate(cart, false)
         }
 
-        events.emit('removeLineItemSuccess', cart)
-        setError('removeLineItemError', null)
+        storefrontEvents.emit('removeLineItemSuccess', cart)
       } catch (error) {
-        setError('removeLineItemError', error as Error)
-        events.emit('removeLineItemError', error)
+        storefrontEvents.emit('removeLineItemError', formatError(error))
       }
     },
     [cartLocalStorage, client, mutate]
@@ -234,9 +197,7 @@ const InternalContextProvider = ({
         cartItemsCount,
         onAddLineItem,
         onUpdateLineItem,
-        onRemoveLineItem,
-        events,
-        errors
+        onRemoveLineItem
       }}
     >
       {children}
