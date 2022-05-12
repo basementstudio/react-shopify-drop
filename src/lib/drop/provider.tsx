@@ -145,8 +145,10 @@ function Renderer({
 
   return (
     <>
-      {isComplete && <Memo>{children}</Memo>}
-      {countdownState !== 'complete' && <Memo>{countdownChildren}</Memo>}
+      {(!countdownChildren || isComplete) && <Memo>{children}</Memo>}
+      {countdownChildren && countdownState !== 'complete' && (
+        <Memo>{countdownChildren}</Memo>
+      )}
     </>
   )
 }
